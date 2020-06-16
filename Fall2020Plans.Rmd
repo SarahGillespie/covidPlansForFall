@@ -36,6 +36,8 @@ library(Hmisc)
 ```{r}
 fall2020dataCoHEJun15 <- read_csv("fall2020dataCoHEJun15.csv")
 
+fall2020dataCoHEJun15 <- unique(fall2020dataCoHEJun15)
+
 Most_Recent_Cohorts_SMALL <- read_csv("Most-Recent-Cohorts-SMALL.csv")
 
 
@@ -47,8 +49,8 @@ bigList<-merge(x=fall2020dataCoHEJun15,y=Most_Recent_Cohorts_SMALL,by="Instituti
 bigList<-bigList[!is.na(bigList$STABBR),]
 
 List <- bigList %>%
-  separate(Category, c("linkish", "call1"), ">") %>%
-  separate(call1, c("call", "extra"), "<") %>%
+  separate(Category, c("linkish", "Call1"), ">") %>%
+  separate(Call1, c("Call", "extra"), "<") %>%
   select(-linkish, -extra, -UNITID, -OPEID, -OPEID6)
 
 ```
@@ -57,7 +59,7 @@ List <- bigList %>%
 #by state
 
 ggplot(List, aes(y = State)) +
- geom_bar(aes(fill = call), position = position_stack(reverse = FALSE))
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
 
 ```
 
@@ -65,7 +67,14 @@ ggplot(List, aes(y = State)) +
 #public vs. private
 
 ggplot(List, aes(y = Control)) +
- geom_bar(aes(fill = call), position = position_stack(reverse = FALSE))
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+```
+```{r}
+#all colleges choices
+
+ggplot(List, aes(y = Call)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
 ```
 
 ```{r}
@@ -73,8 +82,9 @@ ggplot(List, aes(y = Control)) +
 WomenOnly <- List %>%
   filter(WOMENONLY == 1)
 
-ggplot(WomenOnly, aes(y = Control)) +
- geom_bar(aes(fill = call), position = position_stack(reverse = FALSE))
+ggplot(WomenOnly, aes(y = Call)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
 ```
 
 ```{r}
