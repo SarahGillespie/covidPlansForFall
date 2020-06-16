@@ -33,7 +33,24 @@ library(Hmisc)
 
 #see if you can also consider the state's typical political leaning and the colleges rankings
 
+```{r}
+fall2020dataCoHEJun15 <- read_csv("fall2020dataCoHEJun15.csv")
 
-I go to a small college
-with snow days and previous covid decisons theer are usually a cluster of other colleges that my college follows the lead for regarding institutional decisions.
-I used a few factors to see if there was a consensus or factors to predict a college's decsion.
+Most_Recent_Cohorts_SMALL <- read_csv("Most-Recent-Cohorts-SMALL.csv")
+
+
+Most_Recent_Cohorts_SMALL <- rename(Most_Recent_Cohorts_SMALL, Institution = INSTNM)
+ 
+
+bigList<-merge(x=fall2020dataCoHEJun15,y=Most_Recent_Cohorts_SMALL,by="Institution",all.x=TRUE)
+
+bigList<-bigList[!is.na(bigList$STABBR),]
+
+List <- bigList %>%
+  separate(Category, c("linkish", "call1"), ">") %>%
+  separate(call1, c("call", "extra"), "<") %>%
+  select(-linkish, -extra, -UNITID, -OPEID, -OPEID6)
+
+
+
+```
