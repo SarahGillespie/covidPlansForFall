@@ -30,3 +30,10 @@ library(Hmisc)
 
 # relevant article https://www.chronicle.com/article/Here-s-a-List-of-Colleges-/248626?utm_source=at&utm_medium=en&utm_source=Iterable&utm_medium=email&utm_campaign=campaign_1209367&cid=at&source=ams&sourceId=378492
 # data last downloaded on june 15 2020
+
+#see if you can also consider the state's typical political leaning and the colleges rankings
+
+
+I go to a small college
+with snow days and previous covid decisons theer are usually a cluster of other colleges that my college follows the lead for regarding institutional decisions.
+I used a few factors to see if there was a consensus or factors to predict a college's decsion.
