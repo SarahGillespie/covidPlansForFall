@@ -1,0 +1,32 @@
+---
+title: "Fall2020Plans"
+author: "Sarah Gillespie"
+date: "6/15/2020"
+output: html_document
+---
+```{r include=FALSE, warning=FALSE, message=FALSE, error=FALSE}
+# setting up the file
+require(knitr)
+opts_chunk$set(
+  tidy=TRUE,                     # display code as typed
+  size="small",                   # slightly smaller font for code
+  tidy.opts=list(width.cutoff=65), # wrap text and long comments
+  fig.width=7, fig.height=5           #figure size
+)
+
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+require(tidyverse)
+require(mosaic)
+require(mosaicData)
+require(lmtest)
+library(formatR)
+library(gmodels) 
+library(Hmisc)
+```
+
+# relevant article https://www.chronicle.com/article/Here-s-a-List-of-Colleges-/248626?utm_source=at&utm_medium=en&utm_source=Iterable&utm_medium=email&utm_campaign=campaign_1209367&cid=at&source=ams&sourceId=378492
+# data last downloaded on june 15 2020
