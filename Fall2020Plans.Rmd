@@ -33,20 +33,30 @@ library(Hmisc)
 
 #see if you can also consider the state's typical political leaning and the colleges rankings
 
-```{r}
+```{r warning=FALSE, message=FALSE, error=FALSE}
 fall2020dataCoHEJun15 <- read_csv("fall2020dataCoHEJun15.csv")
 
 fall2020dataCoHEJun15 <- unique(fall2020dataCoHEJun15)
 
-Most_Recent_Cohorts_SMALL <- read_csv("Most-Recent-Cohorts-SMALL.csv")
 
+Most_Recent_Cohorts_SMALL <- read_csv("Most-Recent-Cohorts-SMALL.csv")
 
 Most_Recent_Cohorts_SMALL <- rename(Most_Recent_Cohorts_SMALL, Institution = INSTNM)
  
 
+KaggleRegions <- read_csv("KaggleRegions_datasets_31195_39789_states.csv")
+
+KaggleRegions <- rename(KaggleRegions, StateL = State)
+
+KaggleRegions <- rename(KaggleRegions, "State" = "State Code")
+
 bigList<-merge(x=fall2020dataCoHEJun15,y=Most_Recent_Cohorts_SMALL,by="Institution",all.x=TRUE)
 
+bigList<-merge(x=bigList,y=KaggleRegions,by="State",all.x=TRUE)
+
 bigList<-bigList[!is.na(bigList$STABBR),]
+
+
 
 List <- bigList %>%
   separate(Category, c("linkish", "Call1"), ">") %>%
@@ -56,28 +66,33 @@ List <- bigList %>%
 ```
 
 ```{r}
+#ALL STATES ALL SCHOOLS INCLUDING GRAD SCHOOLS
+
 #by state
 
 ggplot(List, aes(y = State)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
 
-```
+#region
 
-```{r}
+ggplot(List, aes(y = Region)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
+#division
+
+ggplot(List, aes(y = Division)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
 #public vs. private
 
 ggplot(List, aes(y = Control)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
-```
-```{r}
+
 #all colleges choices
 
 ggplot(List, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
 
-```
-
-```{r}
 #women only
 WomenOnly <- List %>%
   filter(WOMENONLY == 1)
@@ -85,9 +100,119 @@ WomenOnly <- List %>%
 ggplot(WomenOnly, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
 
+
+#massachusetts only
+
+MassOnly <- List %>%
+  filter(State == "MA")
+
+ggplot(MassOnly, aes(y = Call)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
+  labs(title="Massachusetts")
+
+
 ```
 
 ```{r}
+#primarily UNDERGRAD schools that primarily confer bachelors degrees
+
+Undergrads <- List %>%
+  filter(SCH_DEG == 3)
+
+
+#by state
+
+ggplot(Undergrads, aes(y = State)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
+#region
+
+ggplot(Undergrads, aes(y = Region)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
+#division
+
+ggplot(Undergrads, aes(y = Division)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
+#public vs. private
+
+ggplot(Undergrads, aes(y = Control)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
+#all colleges choices
+
+ggplot(Undergrads, aes(y = Call)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
+#women only
+WomenOnly <- Undergrads %>%
+  filter(WOMENONLY == 1)
+
+ggplot(WomenOnly, aes(y = Call)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
+
 #massachusetts only
 
+MassOnly <- Undergrads %>%
+  filter(State == "MA")
+
+ggplot(MassOnly, aes(y = Call)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
+  labs(title="Massachusetts")
+
 ```
+
+```{r}
+# high SAT score: I define this as schools with a mean score of 1350+. 1350 being the 91st percentile, undergrad
+
+HighScore <- List
+
+HighScore <- data.frame(lapply(HighScore, function(x) {
+                  gsub("NULL", "", x)}))
+
+HighScore$SAT_AVG <- as.numeric(as.character(HighScore$SAT_AVG))
+
+HighScore <- HighScore %>%
+  filter(SAT_AVG > 1349)  %>%
+  filter(SCH_DEG == 3)
+
+
+#by state
+
+ggplot(HighScore, aes(y = State)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
+#region
+
+ggplot(HighScore, aes(y = Region)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
+#division
+
+ggplot(HighScore, aes(y = Division)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
+#public vs. private
+
+ggplot(HighScore, aes(y = Control)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
+#all colleges choices
+
+ggplot(HighScore, aes(y = Call)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+
+#massachusetts only
+
+MassOnly <- HighScore %>%
+  filter(State == "MA")
+
+ggplot(MassOnly, aes(y = Call)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
+  labs(title="Massachusetts")
+
+
+```
+
