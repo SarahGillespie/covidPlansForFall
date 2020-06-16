@@ -69,9 +69,15 @@ ggplot(List, aes(y = Control)) +
 ```
 
 ```{r}
+#women only
 WomenOnly <- List %>%
   filter(WOMENONLY == 1)
 
 ggplot(WomenOnly, aes(y = Control)) +
  geom_bar(aes(fill = call), position = position_stack(reverse = FALSE))
+```
+
+```{r}
+#massachusetts only
+
 ```
