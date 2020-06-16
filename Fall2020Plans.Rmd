@@ -51,6 +51,27 @@ List <- bigList %>%
   separate(call1, c("call", "extra"), "<") %>%
   select(-linkish, -extra, -UNITID, -OPEID, -OPEID6)
 
+```
 
+```{r}
+#by state
 
+ggplot(List, aes(y = State)) +
+ geom_bar(aes(fill = call), position = position_stack(reverse = FALSE))
+
+```
+
+```{r}
+#public vs. private
+
+ggplot(List, aes(y = Control)) +
+ geom_bar(aes(fill = call), position = position_stack(reverse = FALSE))
+```
+
+```{r}
+WomenOnly <- List %>%
+  filter(WOMENONLY == 1)
+
+ggplot(WomenOnly, aes(y = Control)) +
+ geom_bar(aes(fill = call), position = position_stack(reverse = FALSE))
 ```
