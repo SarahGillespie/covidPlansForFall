@@ -28,14 +28,8 @@ library(gmodels)
 library(Hmisc)
 ```
 
-# relevant article https://www.chronicle.com/article/Here-s-a-List-of-Colleges-/248626?utm_source=at&utm_medium=en&utm_source=Iterable&utm_medium=email&utm_campaign=campaign_1209367&cid=at&source=ams&sourceId=378492
-# data last downloaded on june 15 2020
-
-#see if you can also consider the state's typical political leaning 
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-
-#in excel, add the link for the Cal States and other schools with multiple campuses for easier visualization
 
 #read in the article data
 fall2020dataCoHEJun16 <- read_csv("fall2020dataCoHEJun16.csv")
@@ -133,7 +127,25 @@ MassOnly <- List %>%
 ggplot(MassOnly, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
   labs(title="Massachusetts")
+```
 
+```{r}
+#scatterplots
+
+
+List$ADM_RATE <- as.numeric(as.character(List$ADM_RATE))
+List$MEDIAN_HH_INC <- as.numeric(as.character(List$MEDIAN_HH_INC))
+List$POVERTY_RATE <- as.numeric(as.character(List$POVERTY_RATE))
+
+#admin rate and median HH income
+ggplot(List, aes(x = ADM_RATE, y = MEDIAN_HH_INC, color = Call)) +
+  geom_point() +
+  scale_y_continuous(labels = scales::comma)
+
+#admin rate and poverty rate
+ggplot(List, aes(x = ADM_RATE, y = POVERTY_RATE, color = Call)) +
+  geom_point() +
+  scale_y_continuous(labels = scales::comma)
 
 ```
 
