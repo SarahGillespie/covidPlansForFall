@@ -34,14 +34,33 @@ library(Hmisc)
 #see if you can also consider the state's typical political leaning and the colleges rankings
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-fall2020dataCoHEJun15 <- read_csv("fall2020dataCoHEJun15.csv")
 
-fall2020dataCoHEJun15 <- unique(fall2020dataCoHEJun15)
+#in excel, add the link for the Cal States and other schools with multiple campuses for easier visualization
 
+#read in the article data
+fall2020dataCoHEJun16 <- read_csv("fall2020dataCoHEJun16.csv")
 
+#remove any doubles in the article's data
+fall2020dataCoHEJun16 <- unique(fall2020dataCoHEJun16)
+
+#separate anything with a dash, like California State University-Fresno with the specific campus being campus1
+fall2020dataCoHEJun16 <- fall2020dataCoHEJun16 %>%
+  separate(Institution, c("mainname", "campus1"), " — ")
+
+#fall2020dataCoHEJun16 <- fall2020dataCoHEJun16[!duplicated(fall2020dataCoHEJun16$mainname), ]
+
+#read in government data
 Most_Recent_Cohorts_SMALL <- read_csv("Most-Recent-Cohorts-SMALL.csv")
 
+#rename the school name to be institution
 Most_Recent_Cohorts_SMALL <- rename(Most_Recent_Cohorts_SMALL, Institution = INSTNM)
+
+#separate anything with a dash, like California State University-Fresno with the specific campus being campus2 that is then removed
+Most_Recent_Cohorts_SMALL <- Most_Recent_Cohorts_SMALL %>%
+  separate(Institution, c("mainname", "campus2"), "-") %>%
+  select(-campus2)
+
+Most_Recent_Cohorts_SMALL <- Most_Recent_Cohorts_SMALL[!duplicated(Most_Recent_Cohorts_SMALL$mainname), ]
  
 
 KaggleRegions <- read_csv("KaggleRegions_datasets_31195_39789_states.csv")
@@ -50,7 +69,7 @@ KaggleRegions <- rename(KaggleRegions, StateL = State)
 
 KaggleRegions <- rename(KaggleRegions, "State" = "State Code")
 
-bigList<-merge(x=fall2020dataCoHEJun15,y=Most_Recent_Cohorts_SMALL,by="Institution",all.x=TRUE)
+bigList<-merge(x=fall2020dataCoHEJun16,y=Most_Recent_Cohorts_SMALL,by="mainname",all.x=TRUE)
 
 bigList<-merge(x=bigList,y=KaggleRegions,by="State",all.x=TRUE)
 
@@ -62,6 +81,10 @@ List <- bigList %>%
   separate(Category, c("linkish", "Call1"), ">") %>%
   separate(Call1, c("Call", "extra"), "<") %>%
   select(-linkish, -extra, -UNITID, -OPEID, -OPEID6)
+
+
+
+
 
 ```
 
