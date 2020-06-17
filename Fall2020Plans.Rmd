@@ -31,7 +31,7 @@ library(Hmisc)
 # relevant article https://www.chronicle.com/article/Here-s-a-List-of-Colleges-/248626?utm_source=at&utm_medium=en&utm_source=Iterable&utm_medium=email&utm_campaign=campaign_1209367&cid=at&source=ams&sourceId=378492
 # data last downloaded on june 15 2020
 
-#see if you can also consider the state's typical political leaning and the colleges rankings
+#see if you can also consider the state's typical political leaning 
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 
@@ -82,7 +82,8 @@ List <- bigList %>%
   separate(Call1, c("Call", "extra"), "<") %>%
   select(-linkish, -extra, -UNITID, -OPEID, -OPEID6)
 
-
+#makes decision all lowercase
+List[[5]] <- tolower(List[[5]])
 
 
 
@@ -136,56 +137,7 @@ ggplot(MassOnly, aes(y = Call)) +
 
 ```
 
-```{r}
-#primarily UNDERGRAD schools that primarily confer bachelors degrees
 
-Undergrads <- List %>%
-  filter(SCH_DEG == 3)
-
-
-#by state
-
-ggplot(Undergrads, aes(y = State)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
-
-#region
-
-ggplot(Undergrads, aes(y = Region)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
-
-#division
-
-ggplot(Undergrads, aes(y = Division)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
-
-#public vs. private
-
-ggplot(Undergrads, aes(y = Control)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
-
-#all colleges choices
-
-ggplot(Undergrads, aes(y = Call)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
-
-#women only
-WomenOnly <- Undergrads %>%
-  filter(WOMENONLY == 1)
-
-ggplot(WomenOnly, aes(y = Call)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
-
-
-#massachusetts only
-
-MassOnly <- Undergrads %>%
-  filter(State == "MA")
-
-ggplot(MassOnly, aes(y = Call)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Massachusetts")
-
-```
 
 ```{r}
 # high SAT score: I define this as schools with a mean score of 1350+. 1350 being the 91st percentile, undergrad
