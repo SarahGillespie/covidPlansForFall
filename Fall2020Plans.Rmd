@@ -1,9 +1,10 @@
 ---
-title: "Fall2020Plans"
+title: "Higher Education's Fall 2020 Plans"
 author: "Sarah Gillespie"
-date: "6/15/2020"
+date: "6/18/2020"
 output: html_document
 ---
+
 ```{r include=FALSE, warning=FALSE, message=FALSE, error=FALSE}
 # setting up the file
 require(knitr)
@@ -29,11 +30,11 @@ library(gmodels)
 library(Hmisc)
 ```
 
-I attend a small college and am apprehensively waiting to know my fall plans. I wanted to see if there was a natural consensus among colleges with similar attributes to my own school by looking at current Fall 2020 plans broken down by geographic location, acceptance rate, average SAT score, percent of international students, and median household income. Unfortunately for me, the most common announcement among those other schools is that they’re waiting to make the decision.
+I attend a small college and am apprehensively waiting to know my fall plans. I wanted to see if there was a natural consensus among colleges with similar attributes to my own school by looking at current Fall 2020 plans broken down by geographic location, acceptance rate, average SAT score, percent of international students, and median household income. Unfortunately for me, the most common announcement among those other schools is that they’re "waiting to make the decision" or "considering a range of scenarios." This is most prominant for schools with a low acceptance rate or high percentage of international students.
 
-School plans were sourced from [The Chronicle of Higher Education’s frequently updated list](https://www.chronicle.com/article/Here-s-a-List-of-Colleges-/248626?utm_source=at&utm_medium=en&utm_source=Iterable&utm_medium=email&utm_campaign=campaign_1209367&cid=at&source=ams&sourceId=378492) tracking nearly a thousand school’s Fall 2020 plans. The list did not specify how each school was selected and there is an option to submit untracked institutions to the list, which means the large sample size is not necessarily randomly selected from all the higher education institutions in the United States. The sample size does include many well-known colleges, including all 23 Cal State campuses, and many Massachusetts schools (Smith, MIT, Amherst, Wellesley, Hampshire, Boston U, Boston College, Brandeis, Northeastern, and more!) but also many lesser known ones across the U.S., such as Point Loma Nazarene University and University of South Alabama, and community colleges.
+School plans were sourced from [The Chronicle of Higher Education’s frequently updated list](https://www.chronicle.com/article/Here-s-a-List-of-Colleges-/248626?utm_source=at&utm_medium=en&utm_source=Iterable&utm_medium=email&utm_campaign=campaign_1209367&cid=at&source=ams&sourceId=378492) tracking nearly a thousand school’s Fall 2020 plans. The list did not specify how each school was selected and there is an option to submit untracked institutions to the list, which means the large sample size is not necessarily randomly selected from all the higher education institutions in the United States. The sample size does include many well-known colleges, including all 23 Cal State campuses, and many Massachusetts schools (MIT, Smith, Amherst, Wellesley, Hampshire, Boston University, Boston College, Brandeis, Northeastern) but also many lesser known ones across the U.S., such as Point Loma Nazarene University and University of South Alabama, and community colleges.
 
-Last time I downloaded the data: June 16
+Last time I downloaded the data: June 17
 
 [My Github project with code](https://github.com/SarahGillespie/covidPlansForFall)
 
@@ -41,16 +42,16 @@ Last time I downloaded the data: June 16
 ```{r include=FALSE, warning=FALSE, message=FALSE, error=FALSE}
 
 #read in the article data
-fall2020dataCoHEJun16 <- read_csv("fall2020dataCoHEJun16.csv")
+fall2020dataCoHEJun17 <- read_csv("fall2020dataCoHEJun17.csv")
 
 #remove any doubles in the article's data
-fall2020dataCoHEJun16 <- unique(fall2020dataCoHEJun16)
+fall2020dataCoHEJun17 <- unique(fall2020dataCoHEJun17)
 
 #separate anything with a dash, like California State University-Fresno with the specific campus being campus1
-fall2020dataCoHEJun16 <- fall2020dataCoHEJun16 %>%
+fall2020dataCoHEJun17 <- fall2020dataCoHEJun17 %>%
   separate(Institution, c("mainname", "campus1"), " — ")
 
-#fall2020dataCoHEJun16 <- fall2020dataCoHEJun16[!duplicated(fall2020dataCoHEJun16$mainname), ]
+#fall2020dataCoHEJun17 <- fall2020dataCoHEJun17[!duplicated(fall2020dataCoHEJun17$mainname), ]
 
 #read in government data
 Most_Recent_Cohorts_SMALL <- read_csv("Most-Recent-Cohorts-SMALL.csv")
@@ -72,7 +73,7 @@ KaggleRegions <- rename(KaggleRegions, StateL = State)
 
 KaggleRegions <- rename(KaggleRegions, "State" = "State Code")
 
-bigList<-merge(x=fall2020dataCoHEJun16,y=Most_Recent_Cohorts_SMALL,by="mainname",all.x=TRUE)
+bigList<-merge(x=fall2020dataCoHEJun17,y=Most_Recent_Cohorts_SMALL,by="mainname",all.x=TRUE)
 
 bigList<-merge(x=bigList,y=KaggleRegions,by="State",all.x=TRUE)
 
@@ -112,29 +113,37 @@ List<-merge(x=List,y=X2016results,by="StateL",all.x=TRUE)
 
 ggplot(List, aes(y = Region)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Colleges fall 2020 call by Region", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
-  theme_few()
+  labs(title="Colleges fall 2020 call by Region", caption = "Data from The Chronicle of Higher Education on 6/17/2020") +
+  theme_few() +
+  xlab("Number of schools") +
+  ylab("Region of the U.s.")
 
 #division
 
 ggplot(List, aes(y = Division)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Colleges fall 2020 call by Division", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
-  theme_few()
+  labs(title="Colleges fall 2020 call by Division", caption = "Data from The Chronicle of Higher Education on 6/17/2020") +
+  theme_few() +
+  xlab("Number of schools") +
+  ylab(" ")
 
 #public vs. private
 
 ggplot(List, aes(y = Control)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))  +
-  labs(title="Public vs. Private school fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
-  theme_few()
+  labs(title="Public vs. Private school fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/17/2020") +
+  theme_few() +
+  xlab("Number of schools") +
+  ylab(" ")
 
 #all colleges choices
 
 ggplot(List, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))  +
-  labs(title="All schools fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
-  theme_few()
+  labs(title="All schools' fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/17/2020") +
+  theme_few() +
+  xlab("Number of schools") +
+  ylab(" ")
 
 #women only
 WomenOnly <- List %>%
@@ -142,8 +151,10 @@ WomenOnly <- List %>%
 
 ggplot(WomenOnly, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Historically Women's Colleges fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
-  theme_few()
+  labs(title="Historically Women's Colleges' fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/17/2020") +
+  theme_few() +
+  xlab("Number of schools") +
+  ylab(" ")
 
 
 #Massachusetts only
@@ -153,8 +164,11 @@ MassOnly <- List %>%
 
 ggplot(MassOnly, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Massachusetts schools fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
-  theme_few()
+  labs(title="Massachusetts schools' fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/17/2020") +
+  theme_few() +
+  xlab("Number of schools") +
+  ylab(" ")
+
 ```
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
@@ -175,8 +189,10 @@ List$PCT_BORN_US <- as.numeric(as.character(List$PCT_BORN_US))
 ggplot(List, aes(x = ADM_RATE, y = MEDIAN_HH_INC, color = Call)) +
   geom_point() +
   scale_y_continuous(labels = scales::comma) +
-  labs(title="Median Household Income, acceptance rate, and fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
-  theme_few()
+  labs(title="Median Household Income, acceptance rate, and fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/17/2020") +
+  theme_few()  +
+  xlab("Acceptance Rate") +
+  ylab("Median Household Income")
 
 #admin rate and poverty rate
 
@@ -195,8 +211,10 @@ ggplot(List, aes(x = ADM_RATE, y = PCT_BORN_US, color = Call)) +
   geom_point() +
   scale_y_continuous(trans = 'log10') +
   ylim(65,100) +
-  labs(title="Percent of students born in the U.S., acceptance rate, and fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
-  theme_few()
+  labs(title="Percent of students born in the U.S., acceptance rate, and fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/17/2020") +
+  theme_few()  +
+  xlab("Acceptance Rate") +
+  ylab("Percentage of students born in the U.S.")
 
 ```
 
@@ -228,8 +246,10 @@ SelectiveSchool <- SelectiveSchool %>%
 
 ggplot(SelectiveSchool, aes(y = Region)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))+
-  labs(title="Selective schools fall 2020 call by region", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
-  theme_few()
+  labs(title="Selective schools' fall 2020 call by region", caption = "Data from The Chronicle of Higher Education on 6/17/2020") +
+  theme_few()  +
+  xlab("Number of schools") +
+  ylab(" ")
 
 #division
 
@@ -253,8 +273,10 @@ MassOnly <- SelectiveSchool %>%
 
 ggplot(MassOnly, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Massachusetts selective schools fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
-  theme_few()
+  labs(title="Massachusetts selective schools' fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/17/2020") +
+  theme_few()  +
+  xlab("Number of schools") +
+  ylab(" ")
 
 #admin rate and state's political lean
 
