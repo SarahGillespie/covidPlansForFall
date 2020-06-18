@@ -18,18 +18,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
-```{r warning=FALSE, message=FALSE, error=FALSE}
+```{r include=FALSE, warning=FALSE, message=FALSE, error=FALSE}
 require(tidyverse)
 require(mosaic)
 require(mosaicData)
 require(lmtest)
+library(ggthemes)
 library(formatR)
 library(gmodels) 
 library(Hmisc)
 ```
 
 
-```{r warning=FALSE, message=FALSE, error=FALSE}
+```{r include=FALSE, warning=FALSE, message=FALSE, error=FALSE}
 
 #read in the article data
 fall2020dataCoHEJun16 <- read_csv("fall2020dataCoHEJun16.csv")
@@ -74,131 +75,183 @@ bigList<-bigList[!is.na(bigList$STABBR),]
 List <- bigList %>%
   separate(Category, c("linkish", "Call1"), ">") %>%
   separate(Call1, c("Call", "extra"), "<") %>%
-  select(-linkish, -extra, -UNITID, -OPEID, -OPEID6)
+  select(-linkish, -extra, -UNITID, -OPEID, -OPEID6, -DISTANCEONLY, -RELAFFIL, -HCM2, -CCSIZSET, -CCUGPROF, -CCBASIC)
 
 #makes decision all lowercase
 List[[5]] <- tolower(List[[5]])
 
+#2016 election results
+X2016results <- read_csv("2016results.csv")
+
+X2016results <- rename(X2016results, StateL = State)
 
 
+#join election results to each school by state
+
+List<-merge(x=List,y=X2016results,by="StateL",all.x=TRUE)
 ```
 
-```{r}
-#ALL STATES ALL SCHOOLS INCLUDING GRAD SCHOOLS
+```{r warning=FALSE, message=FALSE, error=FALSE}
+
+#ALL STATES ALL SCHOOLS INCLUDING SOME GRAD SCHOOLS
 
 #by state
 
-ggplot(List, aes(y = State)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+# ggplot(List, aes(y = State)) +
+#  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
 
 #region
 
 ggplot(List, aes(y = Region)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
+  labs(title="Colleges fall 2020 call by Region") +
+  theme_few()
 
 #division
 
 ggplot(List, aes(y = Division)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
+  labs(title="Colleges fall 2020 call by Division") +
+  theme_few()
 
 #public vs. private
 
 ggplot(List, aes(y = Control)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))  +
+  labs(title="Public vs. Private school fall 2020 call") +
+  theme_few()
 
 #all colleges choices
 
 ggplot(List, aes(y = Call)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))  +
+  labs(title="All schools fall 2020 call") +
+  theme_few()
 
 #women only
 WomenOnly <- List %>%
   filter(WOMENONLY == 1)
 
 ggplot(WomenOnly, aes(y = Call)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
+  labs(title="Historically Women's Colleges fall 2020 call") +
+  theme_few()
 
 
-#massachusetts only
+#Massachusetts only
 
 MassOnly <- List %>%
   filter(State == "MA")
 
 ggplot(MassOnly, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Massachusetts")
+  labs(title="Massachusetts schools fall 2020 call") +
+  theme_few()
 ```
 
-```{r}
+```{r warning=FALSE, message=FALSE, error=FALSE}
+
 #scatterplots
 
 
 List$ADM_RATE <- as.numeric(as.character(List$ADM_RATE))
 List$MEDIAN_HH_INC <- as.numeric(as.character(List$MEDIAN_HH_INC))
 List$POVERTY_RATE <- as.numeric(as.character(List$POVERTY_RATE))
+List$UGDS <- as.numeric(as.character(List$UGDS))
+List$percR <- as.numeric(as.character(List$percR))
+List$ADM_RATE <- as.numeric(as.character(List$ADM_RATE))
+List$PCT_BORN_US <- as.numeric(as.character(List$PCT_BORN_US))
+
 
 #admin rate and median HH income
 ggplot(List, aes(x = ADM_RATE, y = MEDIAN_HH_INC, color = Call)) +
   geom_point() +
-  scale_y_continuous(labels = scales::comma)
+  scale_y_continuous(labels = scales::comma) +
+  labs(title="Median Household Income, acceptance rate, and fall 2020 call") +
+  theme_few()
 
 #admin rate and poverty rate
-ggplot(List, aes(x = ADM_RATE, y = POVERTY_RATE, color = Call)) +
+
+# ggplot(List, aes(x = ADM_RATE, y = POVERTY_RATE, color = Call)) +
+#   geom_point() +
+#   scale_y_continuous(labels = scales::comma)
+
+#admin rate and number of undergrad students
+
+# ggplot(List, aes(x = ADM_RATE, y = UGDS, color = Call)) +
+#   geom_point() +
+#   scale_y_continuous(trans = 'log10')
+
+#admin rate and percentage of students born inside the United States
+ggplot(List, aes(x = ADM_RATE, y = PCT_BORN_US, color = Call)) +
   geom_point() +
-  scale_y_continuous(labels = scales::comma)
+  scale_y_continuous(trans = 'log10') +
+  ylim(65,100) +
+  labs(title="Percent of students born in the U.S., acceptance rate, and fall 2020 call") +
+  theme_few()
 
 ```
 
 
 
-```{r}
-# high SAT score: I define this as schools with a mean score of 1350+. 1350 being the 91st percentile, undergrad
+```{r warning=FALSE, message=FALSE, error=FALSE}
 
-HighScore <- List
+# selective schools: I define this as schools with an acceptance rate of <25%.
 
-HighScore <- data.frame(lapply(HighScore, function(x) {
+SelectiveSchool <- List
+
+SelectiveSchool <- data.frame(lapply(SelectiveSchool, function(x) {
                   gsub("NULL", "", x)}))
 
-HighScore$SAT_AVG <- as.numeric(as.character(HighScore$SAT_AVG))
+SelectiveSchool$percR <- as.numeric(as.character(SelectiveSchool$percR))
+SelectiveSchool$ADM_RATE <- as.numeric(as.character(SelectiveSchool$ADM_RATE))
+SelectiveSchool$SAT_AVG <- as.numeric(as.character(SelectiveSchool$SAT_AVG))
 
-HighScore <- HighScore %>%
-  filter(SAT_AVG > 1349)  %>%
-  filter(SCH_DEG == 3)
+SelectiveSchool <- SelectiveSchool %>%
+  filter(ADM_RATE < 0.25)
 
 
 #by state
 
-ggplot(HighScore, aes(y = State)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+# ggplot(SelectiveSchool, aes(y = State)) +
+#  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
 
 #region
 
-ggplot(HighScore, aes(y = Region)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+ggplot(SelectiveSchool, aes(y = Region)) +
+ geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))+
+  labs(title="Selective schools fall 2020 call by region") +
+  theme_few()
 
 #division
 
-ggplot(HighScore, aes(y = Division)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+# ggplot(SelectiveSchool, aes(y = Division)) +
+#  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
 
 #public vs. private
 
-ggplot(HighScore, aes(y = Control)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+# ggplot(SelectiveSchool, aes(y = Control)) +
+#  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
 
 #all colleges choices
 
-ggplot(HighScore, aes(y = Call)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+# ggplot(SelectiveSchool, aes(y = Call)) +
+#  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
 
 #massachusetts only
 
-MassOnly <- HighScore %>%
+MassOnly <- SelectiveSchool %>%
   filter(State == "MA")
 
 ggplot(MassOnly, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Massachusetts")
+  labs(title="Massachusetts selective schools fall 2020 call") +
+  theme_few()
+
+#admin rate and state's politcal lean
+
+# ggplot(SelectiveSchool, aes(x = ADM_RATE, y = percR, color = Call)) +
+#   geom_point()
 
 
 ```
