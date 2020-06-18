@@ -29,6 +29,14 @@ library(gmodels)
 library(Hmisc)
 ```
 
+I attend a small college and am apprehensively waiting to know my fall plans. I wanted to see if there was a natural consensus among colleges with similar attributes to my own school by looking at current Fall 2020 plans broken down by geographic location, acceptance rate, average SAT score, percent of international students, and median household income. Unfortunately for me, the most common announcement among those other schools is that they’re waiting to make the decision.
+
+School plans were sourced from [The Chronicle of Higher Education’s frequently updated list](https://www.chronicle.com/article/Here-s-a-List-of-Colleges-/248626?utm_source=at&utm_medium=en&utm_source=Iterable&utm_medium=email&utm_campaign=campaign_1209367&cid=at&source=ams&sourceId=378492) tracking nearly a thousand school’s Fall 2020 plans. The list did not specify how each school was selected and there is an option to submit untracked institutions to the list, which means the large sample size is not necessarily randomly selected from all the higher education institutions in the United States.
+
+Last time I downloaded the data: June 16
+
+[My Github project with code](https://github.com/SarahGillespie/covidPlansForFall)
+
 
 ```{r include=FALSE, warning=FALSE, message=FALSE, error=FALSE}
 
@@ -104,28 +112,28 @@ List<-merge(x=List,y=X2016results,by="StateL",all.x=TRUE)
 
 ggplot(List, aes(y = Region)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Colleges fall 2020 call by Region") +
+  labs(title="Colleges fall 2020 call by Region", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
   theme_few()
 
 #division
 
 ggplot(List, aes(y = Division)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Colleges fall 2020 call by Division") +
+  labs(title="Colleges fall 2020 call by Division", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
   theme_few()
 
 #public vs. private
 
 ggplot(List, aes(y = Control)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))  +
-  labs(title="Public vs. Private school fall 2020 call") +
+  labs(title="Public vs. Private school fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
   theme_few()
 
 #all colleges choices
 
 ggplot(List, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))  +
-  labs(title="All schools fall 2020 call") +
+  labs(title="All schools fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
   theme_few()
 
 #women only
@@ -134,7 +142,7 @@ WomenOnly <- List %>%
 
 ggplot(WomenOnly, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Historically Women's Colleges fall 2020 call") +
+  labs(title="Historically Women's Colleges fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
   theme_few()
 
 
@@ -145,7 +153,7 @@ MassOnly <- List %>%
 
 ggplot(MassOnly, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Massachusetts schools fall 2020 call") +
+  labs(title="Massachusetts schools fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
   theme_few()
 ```
 
@@ -167,7 +175,7 @@ List$PCT_BORN_US <- as.numeric(as.character(List$PCT_BORN_US))
 ggplot(List, aes(x = ADM_RATE, y = MEDIAN_HH_INC, color = Call)) +
   geom_point() +
   scale_y_continuous(labels = scales::comma) +
-  labs(title="Median Household Income, acceptance rate, and fall 2020 call") +
+  labs(title="Median Household Income, acceptance rate, and fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
   theme_few()
 
 #admin rate and poverty rate
@@ -187,7 +195,7 @@ ggplot(List, aes(x = ADM_RATE, y = PCT_BORN_US, color = Call)) +
   geom_point() +
   scale_y_continuous(trans = 'log10') +
   ylim(65,100) +
-  labs(title="Percent of students born in the U.S., acceptance rate, and fall 2020 call") +
+  labs(title="Percent of students born in the U.S., acceptance rate, and fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
   theme_few()
 
 ```
@@ -220,7 +228,7 @@ SelectiveSchool <- SelectiveSchool %>%
 
 ggplot(SelectiveSchool, aes(y = Region)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))+
-  labs(title="Selective schools fall 2020 call by region") +
+  labs(title="Selective schools fall 2020 call by region", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
   theme_few()
 
 #division
@@ -245,14 +253,27 @@ MassOnly <- SelectiveSchool %>%
 
 ggplot(MassOnly, aes(y = Call)) +
  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Massachusetts selective schools fall 2020 call") +
+  labs(title="Massachusetts selective schools fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/16/2020") +
   theme_few()
 
-#admin rate and state's politcal lean
+#admin rate and state's political lean
 
 # ggplot(SelectiveSchool, aes(x = ADM_RATE, y = percR, color = Call)) +
 #   geom_point()
 
 
 ```
+
+I joined four data sets when making the data visualizations. 
+I began with The Chronicle of Higher Education article’s data. I opened it in Excell to change the formatting to account for each campus for schools with multiple campuses, such as the California State University system.
+
+I used the [United States Department of Education’s most recent institution-level data](https://collegescorecard.ed.gov/data/) and joined it with the Chronicle of Higher Education data by institution name. I first brought the Department of Education data into Excel and removed unnecessary columns because the downloaded csv was too large for my Rstudio desktop version to open.
+
+I joined a [Kaggle spreadsheet created by Omer Shacham](https://www.kaggle.com/omer2040/usa-states-to-region) to categorize each school’s state into regions and divisions of the United States.
+ 
+I joined the [World Population Review 2016 Election Results By State](https://worldpopulationreview.com/states/2016-election-results-by-state/) spreadsheet for each state’s presidential election results.
+
+
+Later, I hope to break it down by what the school is ranked in education and healthcare costs. I am also interested in including multiple linear regression once more schools release their fall 2020 plans.
+
 
