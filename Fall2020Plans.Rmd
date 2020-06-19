@@ -83,8 +83,8 @@ bigList<-bigList[!is.na(bigList$STABBR),]
 
 
 List <- bigList %>%
-  separate(Category, c("linkish", "Call1"), ">") %>%
-  separate(Call1, c("Call", "extra"), "<") %>%
+  separate(Category, c("linkish", "Decision1"), ">") %>%
+  separate(Decision1, c("Decision", "extra"), "<") %>%
   select(-linkish, -extra, -UNITID, -OPEID, -OPEID6, -DISTANCEONLY, -RELAFFIL, -HCM2, -CCSIZSET, -CCUGPROF, -CCBASIC)
 
 #makes decision all lowercase
@@ -108,13 +108,13 @@ List<-merge(x=List,y=X2016results,by="StateL",all.x=TRUE)
 #by state
 
 # ggplot(List, aes(y = State)) +
-#  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+#  geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))
 
 #region
 
 ggplot(List, aes(y = Region)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Colleges fall 2020 call by Region", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+ geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE)) +
+  labs(title="Colleges fall 2020 Decision by Region", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
   theme_few() +
   xlab("Number of schools") +
   ylab("Region of the U.s.")
@@ -122,8 +122,8 @@ ggplot(List, aes(y = Region)) +
 #division
 
 ggplot(List, aes(y = Division)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Colleges fall 2020 call by Division", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+ geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE)) +
+  labs(title="Colleges fall 2020 Decision by Division", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
   theme_few() +
   xlab("Number of schools") +
   ylab(" ")
@@ -131,17 +131,17 @@ ggplot(List, aes(y = Division)) +
 #public vs. private
 
 ggplot(List, aes(y = Control)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))  +
-  labs(title="Public vs. Private school fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+ geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))  +
+  labs(title="Public vs. Private school fall 2020 Decision", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
   theme_few() +
   xlab("Number of schools") +
   ylab(" ")
 
 #all colleges choices
 
-ggplot(List, aes(y = Call)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))  +
-  labs(title="All schools' fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+ggplot(List, aes(y = Decision)) +
+ geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))  +
+  labs(title="All schools' fall 2020 Decision", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
   theme_few() +
   xlab("Number of schools") +
   ylab(" ")
@@ -150,9 +150,9 @@ ggplot(List, aes(y = Call)) +
 WomenOnly <- List %>%
   filter(WOMENONLY == 1)
 
-ggplot(WomenOnly, aes(y = Call)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Historically Women's Colleges' fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+ggplot(WomenOnly, aes(y = Decision)) +
+ geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE)) +
+  labs(title="Historically Women's Colleges' fall 2020 Decision", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
   theme_few() +
   xlab("Number of schools") +
   ylab(" ")
@@ -163,9 +163,9 @@ ggplot(WomenOnly, aes(y = Call)) +
 MassOnly <- List %>%
   filter(State == "MA")
 
-ggplot(MassOnly, aes(y = Call)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Massachusetts schools' fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+ggplot(MassOnly, aes(y = Decision)) +
+ geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE)) +
+  labs(title="Massachusetts schools' fall 2020 Decision", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
   theme_few() +
   xlab("Number of schools") +
   ylab(" ")
@@ -187,32 +187,32 @@ List$PCT_BORN_US <- as.numeric(as.character(List$PCT_BORN_US))
 
 
 #admin rate and median HH income
-ggplot(List, aes(x = ADM_RATE, y = MEDIAN_HH_INC, color = Call)) +
+ggplot(List, aes(x = ADM_RATE, y = MEDIAN_HH_INC, color = Decision)) +
   geom_point() +
   scale_y_continuous(labels = scales::comma) +
-  labs(title="Median Household Income, acceptance rate, and fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+  labs(title="Median Household Income, acceptance rate, and fall 2020 Decision", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
   theme_few()  +
   xlab("Acceptance Rate") +
   ylab("Median Household Income")
 
 #admin rate and poverty rate
 
-# ggplot(List, aes(x = ADM_RATE, y = POVERTY_RATE, color = Call)) +
+# ggplot(List, aes(x = ADM_RATE, y = POVERTY_RATE, color = Decision)) +
 #   geom_point() +
 #   scale_y_continuous(labels = scales::comma)
 
 #admin rate and number of undergrad students
 
-# ggplot(List, aes(x = ADM_RATE, y = UGDS, color = Call)) +
+# ggplot(List, aes(x = ADM_RATE, y = UGDS, color = Decision)) +
 #   geom_point() +
 #   scale_y_continuous(trans = 'log10')
 
 #admin rate and percentage of students born inside the United States
-ggplot(List, aes(x = ADM_RATE, y = PCT_BORN_US, color = Call)) +
+ggplot(List, aes(x = ADM_RATE, y = PCT_BORN_US, color = Decision)) +
   geom_point() +
   scale_y_continuous(trans = 'log10') +
   ylim(65,100) +
-  labs(title="Percent of students born in the U.S., acceptance rate, and fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+  labs(title="Percent of students born in the U.S., acceptance rate, and fall 2020 Decision", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
   theme_few()  +
   xlab("Acceptance Rate") +
   ylab("Percentage of students born in the U.S.")
@@ -241,13 +241,13 @@ SelectiveSchool <- SelectiveSchool %>%
 #by state
 
 # ggplot(SelectiveSchool, aes(y = State)) +
-#  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+#  geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))
 
 #region
 
 ggplot(SelectiveSchool, aes(y = Region)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))+
-  labs(title="Selective schools' fall 2020 call by region", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+ geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))+
+  labs(title="Selective schools' fall 2020 Decision by region", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
   theme_few()  +
   xlab("Number of schools") +
   ylab(" ")
@@ -255,33 +255,33 @@ ggplot(SelectiveSchool, aes(y = Region)) +
 #division
 
 # ggplot(SelectiveSchool, aes(y = Division)) +
-#  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+#  geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))
 
 #public vs. private
 
 # ggplot(SelectiveSchool, aes(y = Control)) +
-#  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+#  geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))
 
 #all colleges choices
 
-# ggplot(SelectiveSchool, aes(y = Call)) +
-#  geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE))
+# ggplot(SelectiveSchool, aes(y = Decision)) +
+#  geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))
 
 #massachusetts only
 
 MassOnly <- SelectiveSchool %>%
   filter(State == "MA")
 
-ggplot(MassOnly, aes(y = Call)) +
- geom_bar(aes(fill = Call), position = position_stack(reverse = FALSE)) +
-  labs(title="Massachusetts selective schools' fall 2020 call", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+ggplot(MassOnly, aes(y = Decision)) +
+ geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE)) +
+  labs(title="Massachusetts selective schools' fall 2020 Decision", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
   theme_few()  +
   xlab("Number of schools") +
   ylab(" ")
 
 #admin rate and state's political lean
 
-# ggplot(SelectiveSchool, aes(x = ADM_RATE, y = percR, color = Call)) +
+# ggplot(SelectiveSchool, aes(x = ADM_RATE, y = percR, color = Decision)) +
 #   geom_point()
 
 
