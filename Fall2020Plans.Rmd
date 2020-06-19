@@ -50,42 +50,50 @@ fall2020dataCoHEJun18 <- unique(fall2020dataCoHEJun18)
 
 #separate anything with a dash, like California State University-Fresno with the specific campus being campus1
 fall2020dataCoHEJun18 <- fall2020dataCoHEJun18 %>%
+  mutate(firstname = Institution) %>%
   separate(Institution, c("mainname", "campus1"), " — ")
 
-#fall2020dataCoHEJun18 <- fall2020dataCoHEJun18[!duplicated(fall2020dataCoHEJun18$mainname), ]
 
-#read in government data
+# way better college data from the OI at Harvard. This is what created the New York Times article on college mobility https://www.nytimes.com/interactive/projects/college-mobility
+
+OI_mrc_table2 <- read_csv("OI_mrc_table2.csv")
+
+
+OI_mrc_table2 <- OI_mrc_table2 %>%
+  mutate(firstname = name) %>%
+  separate(name, c("mainname", "campus2"), "-")
+
+
+List<-merge(x=fall2020dataCoHEJun18,y=OI_mrc_table2,by="firstname",all.x=TRUE)
+
+List <- List %>%
+  separate(Category, c("linkish", "Decision1"), ">") %>%
+  separate(Decision1, c("Decision", "extra"), "<")
+
+# us government college data for the specific acceptance rates and students born in the US
+
 Most_Recent_Cohorts_SMALL <- read_csv("Most-Recent-Cohorts-SMALL.csv")
 
-#rename the school name to be institution
-Most_Recent_Cohorts_SMALL <- rename(Most_Recent_Cohorts_SMALL, Institution = INSTNM)
 
-#separate anything with a dash, like California State University-Fresno with the specific campus being campus2 that is then removed
 Most_Recent_Cohorts_SMALL <- Most_Recent_Cohorts_SMALL %>%
-  separate(Institution, c("mainname", "campus2"), "-") %>%
-  select(-campus2)
+  mutate(firstname = INSTNM)
 
-Most_Recent_Cohorts_SMALL <- Most_Recent_Cohorts_SMALL[!duplicated(Most_Recent_Cohorts_SMALL$mainname), ]
+List<-merge(x=List,y=Most_Recent_Cohorts_SMALL,by="firstname",all.x=TRUE)
+
  
 
+
+```
+
+```{r}
 KaggleRegions <- read_csv("KaggleRegions_datasets_31195_39789_states.csv")
 
 KaggleRegions <- rename(KaggleRegions, StateL = State)
 
 KaggleRegions <- rename(KaggleRegions, "State" = "State Code")
 
-bigList<-merge(x=fall2020dataCoHEJun18,y=Most_Recent_Cohorts_SMALL,by="mainname",all.x=TRUE)
 
-bigList<-merge(x=bigList,y=KaggleRegions,by="State",all.x=TRUE)
-
-bigList<-bigList[!is.na(bigList$STABBR),]
-
-
-
-List <- bigList %>%
-  separate(Category, c("linkish", "Decision1"), ">") %>%
-  separate(Decision1, c("Decision", "extra"), "<") %>%
-  select(-linkish, -extra, -UNITID, -OPEID, -OPEID6, -DISTANCEONLY, -RELAFFIL, -HCM2, -CCSIZSET, -CCUGPROF, -CCBASIC)
+List<-merge(x=List,y=KaggleRegions,by="State",all.x=TRUE)
 
 #makes decision all lowercase
 List[[5]] <- tolower(List[[5]])
@@ -99,6 +107,7 @@ X2016results <- rename(X2016results, StateL = State)
 #join election results to each school by state
 
 List<-merge(x=List,y=X2016results,by="StateL",all.x=TRUE)
+
 ```
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
@@ -128,14 +137,19 @@ ggplot(List, aes(y = Division)) +
   xlab("Number of schools") +
   ylab(" ")
 
-#public vs. private
-
-ggplot(List, aes(y = Control)) +
- geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))  +
-  labs(title="Public vs. Private school fall 2020 Decision", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
-  theme_few() +
-  xlab("Number of schools") +
-  ylab(" ")
+# #tier
+# 
+# #remove all NA ones
+# 
+# tier <- List %>%
+#   filter(tier == )
+# 
+# ggplot(tier, aes(y = tier_name)) +
+#  geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))  +
+#   labs(title="By tier (non-profit 4-year schools) fall 2020 Decision", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+#   theme_few() +
+#   xlab("Number of schools") +
+#   ylab(" ")
 
 #all colleges choices
 
@@ -148,7 +162,7 @@ ggplot(List, aes(y = Decision)) +
 
 #women only
 WomenOnly <- List %>%
-  filter(WOMENONLY == 1)
+  filter(female > 0.9)
 
 ggplot(WomenOnly, aes(y = Decision)) +
  geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE)) +
@@ -186,11 +200,23 @@ List$ADM_RATE <- as.numeric(as.character(List$ADM_RATE))
 List$PCT_BORN_US <- as.numeric(as.character(List$PCT_BORN_US))
 
 
-#admin rate and median HH income
-ggplot(List, aes(x = ADM_RATE, y = MEDIAN_HH_INC, color = Decision)) +
+#admin rate and HH income
+
+#median 
+ggplot(List, aes(x = ADM_RATE, y = par_median, color = Decision)) +
   geom_point() +
   scale_y_continuous(labels = scales::comma) +
   labs(title="Median Household Income, acceptance rate, and fall 2020 Decision", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+  theme_few()  +
+  xlab("Acceptance Rate") +
+  ylab("Median Household Income")
+
+#mean
+
+ggplot(List, aes(x = ADM_RATE, y = par_mean, color = Decision)) +
+  geom_point() +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title="Mean Household Income, acceptance rate, and fall 2020 Decision", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
   theme_few()  +
   xlab("Acceptance Rate") +
   ylab("Median Household Income")
@@ -232,16 +258,10 @@ SelectiveSchool <- data.frame(lapply(SelectiveSchool, function(x) {
 
 SelectiveSchool$percR <- as.numeric(as.character(SelectiveSchool$percR))
 SelectiveSchool$ADM_RATE <- as.numeric(as.character(SelectiveSchool$ADM_RATE))
-SelectiveSchool$SAT_AVG <- as.numeric(as.character(SelectiveSchool$SAT_AVG))
 
 SelectiveSchool <- SelectiveSchool %>%
   filter(ADM_RATE < 0.25)
 
-
-#by state
-
-# ggplot(SelectiveSchool, aes(y = State)) +
-#  geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))
 
 #region
 
@@ -252,20 +272,6 @@ ggplot(SelectiveSchool, aes(y = Region)) +
   xlab("Number of schools") +
   ylab(" ")
 
-#division
-
-# ggplot(SelectiveSchool, aes(y = Division)) +
-#  geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))
-
-#public vs. private
-
-# ggplot(SelectiveSchool, aes(y = Control)) +
-#  geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))
-
-#all colleges choices
-
-# ggplot(SelectiveSchool, aes(y = Decision)) +
-#  geom_bar(aes(fill = Decision), position = position_stack(reverse = FALSE))
 
 #massachusetts only
 
@@ -278,11 +284,19 @@ ggplot(MassOnly, aes(y = Decision)) +
   theme_few()  +
   xlab("Number of schools") +
   ylab(" ")
+```
 
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
 #admin rate and state's political lean
 
-# ggplot(SelectiveSchool, aes(x = ADM_RATE, y = percR, color = Decision)) +
-#   geom_point()
+ggplot(List, aes(x = ADM_RATE, y = percR, color = Decision)) +
+  geom_point() +
+  labs(title="All schools' fall 2020 decision by acceptance rate and political lean", caption = "Data from The Chronicle of Higher Education on 6/18/2020") +
+  theme_few()  +
+  xlab("Acceptance Rate") +
+  ylab("Percent of state voting Republican in 2016") +
+  geom_jitter()
 
 
 ```
