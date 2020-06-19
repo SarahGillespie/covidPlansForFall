@@ -4,7 +4,6 @@ author: "Sarah Gillespie"
 date: "6/18/2020"
 output:
   html_document: default
-  pdf_document: default
 ---
 
 ```{r include=FALSE, warning=FALSE, message=FALSE, error=FALSE}
