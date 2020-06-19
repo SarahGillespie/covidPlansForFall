@@ -1,7 +1,7 @@
 ---
 title: "Higher Education's Fall 2020 Plans"
 author: "Sarah Gillespie"
-date: "6/18/2020"
+date: "6/19/2020"
 output:
   html_document: default
 ---
@@ -302,8 +302,10 @@ ggplot(List, aes(x = ADM_RATE, y = percR, color = Decision)) +
 ```
 
 
-I joined four data sets when making the data visualizations. 
+I joined five data sets when making the data visualizations. 
 I began with The Chronicle of Higher Education article’s data. I opened it in Microsoft Excel to change the formatting to account for each campus for schools with multiple campuses, such as the California State University system.
+
+I joined [Harvard’s Opportunity Insights Baseline Cross-Sectional Estimates of Child and Parent Income Distributions by College](https://opportunityinsights.org/data/?geographic_level=100&topic=0&paper_id=0#resource-listing). 
 
 I used the [United States Department of Education’s most recent institution-level data](https://collegescorecard.ed.gov/data/) and joined it with the Chronicle of Higher Education data by institution name. I first brought the Department of Education data into Excel and removed unnecessary columns because the downloaded csv was too large for my Rstudio desktop version to open.
 
